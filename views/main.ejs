@@ -1,0 +1,184 @@
+<%- include header.ejs %>
+
+
+<script type='text/javascript'>
+
+    function displayAlert(message){
+        var container = document.getElementById("alertMessage");
+        container.innerHTML = '<div class="alert alert-danger fade in">' +
+          '<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>' +
+          '<h4>Error</h4>' +
+          '<p>' + message +'</p>' +
+        '</div>';
+
+        return false;
+    }
+
+    function addData(){
+        var container = document.getElementById("dataGroup");
+        var index = container.childNodes.length + 1;
+        var newData = document.createElement('div');
+        newData.setAttribute('id', 'data' + index);
+        newData.innerHTML = '<div id="data' + index + '">' +
+                  '<div class="form-group">' +
+                    '<label for="dataPath' + index + '" class="col-sm-2 control-label">Data path</label>' +
+                    '<div class="col-sm-10">' +
+                      '<input type="text" class="form-control" id="dataPath' + index + '" placeholder="message.data.path">' +
+                    '</div>' +
+                  '</div>' +
+                  '<div class="form-group">' +
+                    '<label for="dataValue' + index + '" class="col-sm-2 control-label">Value</label>' +
+                    '<div class="col-sm-10">' +
+                      '<input type="text" class="form-control" id="dataValue' + index + '" placeholder="value">' +
+                    '</div>' +
+                  '</div>' +
+                  '<div class="form-group">' +
+                    '<label for="dataType' + index + '" class="col-sm-2 control-label">Type</label>' +
+                    '<div class="col-sm-10">' +
+                        '<select class="form-control" id="dataType' + index + '">' +
+                          '<option>String</option>' +
+                          '<option>Number</option>' +
+                          '<option>Boolean</option>' +
+                        '</select>' +
+                    '</div>' +
+                  '</div>' +
+                  '<hr class="divider"/>' +
+                '</div>';
+        container.appendChild(newData);
+
+        return false;
+    }
+
+    function sendMessage(success, error){
+        var msgForm = document.getElementById("messageForm");
+        var server = msgForm.elements["server"].value;
+        var serialNumber = msgForm.elements["serialNumber"].value;
+        var password = msgForm.elements["password"].value;
+
+        var dataGroup = document.getElementById("dataGroup");
+        var nbData = dataGroup.childNodes.length + 1;
+        var message = {};
+        for (var i = 1; i < nbData; i++) {
+            var dataPath = msgForm.elements["dataPath" + i].value;
+            var dataValue = msgForm.elements["dataValue" + i].value;
+            var dataType = msgForm.elements["dataType" + i].value;
+            if (dataType === "String") 
+                message[dataPath] = dataValue;
+            else if (dataType === "Number")
+                message[dataPath] = Number(dataValue);
+            else if (dataType === "Boolean")
+                message[dataPath] = dataValue == "true";
+
+        }
+        console.log(serialNumber + ":" + password);
+        console.log(message);
+   
+        $.ajax({
+            url : 'http://localhost:3000/api/send',
+            type: "POST",
+            contentType : 'application/json',
+            dataType: 'json',
+            data: JSON.stringify({
+                server: server,
+                serialNumber: serialNumber,
+                password: password,
+                message: message 
+            }),
+            success : success,
+            error: error
+        });
+
+        return false;
+    }
+</script>
+
+<div class="container">
+    <div id="alertMessage"></div>
+
+	<form id="messageForm" class="form-horizontal" role="form">
+        <div class="panel panel-default">
+          <div class="panel-heading">Identification</div>
+          <div class="panel-body">
+              <div class="form-group">
+                <label for="server" class="col-sm-2 control-label">Server</label>
+                <div class="col-sm-10">
+                    <select class="form-control" id="server">
+                      <option>na.airvantage.net</option>
+                      <option>eu.airvantage.net</option>
+                    </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="serialNumber" class="col-sm-2 control-label">Serial Number</label>
+                <div class="col-sm-10">
+                  <input type="text" class="form-control" id="serialNumber" placeholder="Serial Number">
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="password" class="col-sm-2 control-label">Password</label>
+                <div class="col-sm-10">
+                  <input type="text" class="form-control" id="password" placeholder="Password">
+                </div>
+              </div>
+          </div>
+        </div>
+        <div class="panel panel-default">
+          <div class="panel-heading">Message</div>
+          <div class="panel-body">
+            <div id="dataGroup"><div id="data1">
+                  <div class="form-group">
+                    <label for="dataPath1" class="col-sm-2 control-label">Data path</label>
+                    <div class="col-sm-10">
+                      <input type="text" class="form-control" id="dataPath1" placeholder="message.data.path">
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="dataValue1" class="col-sm-2 control-label">Value</label>
+                    <div class="col-sm-10">
+                      <input type="text" class="form-control" id="dataValue1" placeholder="value">
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="dataType1" class="col-sm-2 control-label">Type</label>
+                    <div class="col-sm-10">
+                        <select class="form-control" id="dataType1">
+                          <option>String</option>
+                          <option>Number</option>
+                          <option>Boolean</option>
+                        </select>
+                    </div>
+                  </div>
+                  <hr class="divider"/>
+                </div></div>
+            <div class="col-sm-offset-10 col-sm-10">
+              <button type="button" class="btn btn-default" onclick="addData()">Add data</button>
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-offset-6 col-sm-10">
+              <!--<button type="button" class="btn btn-default" onclick="sendMessage()">Send</button>-->
+                <button type="button" id="send-btn" data-loading-text="Sending..." class="btn btn-primary">
+                  Send data
+                </button>
+                <script>
+                  $('#send-btn').click(function () {
+                    var btn = $(this)
+                    btn.button('loading')
+                    sendMessage(function (data) {
+                        console.log(data);
+                        btn.button('reset');
+                    },
+                    function (xhr, ajaxOptions, thrownError){
+                        displayAlert(thrownError);
+                        btn.button('reset');
+                    });
+                  });
+                </script>
+            </div>
+        </div>
+    </form>
+
+</div>
+
+<%- include footer.ejs %>

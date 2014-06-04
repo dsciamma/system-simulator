@@ -1,0 +1,20 @@
+body {
+  /*padding: 50px;*/
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+a {
+  color: #00B7FF;
+}
+
+.triplegraph #axis0 text {
+  fill : #5cb85c;
+}
+
+.triplegraph #axis1 text {
+  fill : #d9534f;
+}
+
+.triplegraph #axis2 text {
+  fill : #f0ad4e;
+}
