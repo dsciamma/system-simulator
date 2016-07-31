@@ -1,7 +1,7 @@
 system-simulator
 ================
 
-This application is a Node.js tool that sends system data into AirVantage using MQTT. The data appear in AirVantage as if the selected system had sent them (provided you have the right credentials).
+This application is a Node.js tool that sends system data into AirVantage using MQTT. The data appears in AirVantage as if the selected system had sent them (provided you have the right credentials).
 
 Features
 --------
