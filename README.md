@@ -40,4 +40,4 @@ To run the application:
 
     `Express server listening on port 3000`
 
-* You can access the application at: `http://localhost:3000`.
+* You can access the application at: `http://localhost:3000`
